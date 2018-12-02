@@ -1,0 +1,364 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Hello World App
+host: localhost:10010
+basePath: /
+# 
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+  - application/xml
+produces:
+  - application/json
+  - application/xml
+tags:
+- name: User
+  description: Operations about user
+- name: Cinema
+  description: Operations about movies
+- name: Vignette
+  description: Operations about highway vignette  
+paths:
+  /vignette:
+    x-swagger-router-controller: vignette
+    get:
+      description: Show a vignette based on its highwayname
+      operationId: findVignette
+      tags:
+      - "Vignette"
+      security:
+      - ApiKeyAuth: []
+      parameters:
+        - name: highway
+          in: query
+          description: The name of the highway on the vignette
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Vignette"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+  /vignette/{vignetteId}/buyvignette:
+    x-swagger-router-controller: vignette  
+    get:
+      description: Buys a vignette to a highway
+      operationId: buyVignette
+      tags:
+      - "Vignette"
+      security:
+      - ApiKeyAuth: []      
+      parameters:
+        - name: vignetteId
+          in: path
+          description: Vignette ID
+          required: true
+          type: string
+        - name: x-session-id
+          in: header
+          description: Session ID
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Vignette"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"                 
+  /movies:
+    x-swagger-router-controller: movies
+    get:
+      description: Find a movie based on its title
+      operationId: findMovie
+      tags:
+      - "Cinema"
+      security:
+      - ApiKeyAuth: []
+      parameters:
+        - name: title
+          in: query
+          description: Video Title
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Movie"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+  /movies/{movieId}/buyticket:
+    x-swagger-router-controller: movies  
+    get:
+      description: Buys a ticket to a movie
+      operationId: buyTicket
+      tags:
+      - "Cinema"
+      security:
+      - ApiKeyAuth: []      
+      parameters:
+        - name: movieId
+          in: path
+          description: Video ID
+          required: true
+          type: string
+        - name: x-session-id
+          in: header
+          description: Session ID
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Movie"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"             
+  /user:
+    x-swagger-router-controller: user
+    post:
+      tags:
+      - "User"
+      security:
+      - BasicAuth: []      
+      description: Creates user
+      operationId: createUser
+      produces:
+      - application/xml
+      - application/json      
+      parameters:
+        - name: body
+          in: body
+          description: The username of the user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        400:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse" 
+  /user/login:
+    x-swagger-router-controller: user
+    post:
+      tags:
+      - "User"
+      security:
+      - BasicAuth: []          
+      description: Logs in the user
+      operationId: loginUser
+      produces:
+      - application/xml
+      - application/json      
+      parameters:
+        - name: body
+          in: body
+          description: The username of the user
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"
+        400:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"            
+  /user/logout:
+    x-swagger-router-controller: user    
+    get:
+      tags:
+      - "User"
+      description: Logs out current logged in user session
+      operationId: "logoutUser"
+      parameters: []
+      responses:
+        default:
+          description: "successful operation"  
+  /user/{username}:
+    x-swagger-router-controller: user    
+    x-is-put-method: true
+    get:
+      tags:
+      - "User"
+      description: Get users balance by username
+      operationId: "getUserBalance"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"    
+    put:
+      tags:
+      - "User"
+      description: "Update user."
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "name that need to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"      
+        400:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"  
+        404:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"   
+    delete:
+      tags:
+      - "User"
+      description: "Delete user"
+      operationId: "deleteUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be deleted"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/GeneralResponse"      
+        400:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"  
+        404:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralResponse"   
+  /swagger:
+    x-swagger-pipe: swagger_raw
+securityDefinitions:
+  BasicAuth:
+    type: basic  
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-Session-ID
+definitions:
+  Movie:
+    required:
+      - title
+      - id
+      - price
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      price:
+        type: integer
+  Vignette:
+    required:
+      - highway
+      - id
+      - expdate
+      - price
+    properties:
+      id:
+        type: string
+      highway:
+        type: string   
+      expdate:
+        type: string
+        example: 11-Dec-18
+      price:
+        type: integer
+  User:
+    type: "object"
+    required:
+      - username
+      - password
+      - paymentcard
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      paymentcard:
+        type: integer    
+      balance:
+        type: integer
+    xml:
+      name: User
+  GeneralResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"        
